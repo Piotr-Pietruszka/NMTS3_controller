@@ -55,7 +55,7 @@ plt.show()
 
 # Open loop without control - Sensitivity
 L = G
-S = 1 + G
+S = (1 + G)**(-1)
 print(S)
 mag_S, phase_S, w_S = control.bode(S, dB=True, deg=True, Plot=False)
 plt.figure()
