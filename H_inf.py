@@ -5,6 +5,31 @@ from matplotlib import pyplot as plt
 import scipy.linalg as linalg
 import control
 
+
+def find_gamma(starting_gamma=5.0):
+    gamma = starting_gamma
+    stop_cond = True
+    while stop_cond is True:
+        A_x = A1 - D12 * np.dot(B2, C1)
+        eigv_x, B_x = linalg.eigh(np.dot(B2, np.transpose(B2)) - np.power(gamma, -2) * np.dot(B1, np.transpose(B1)))
+        R_x = linalg.inv(np.identity(B_x.shape[0]) * (eigv_x + 0.1))
+        Q_x = np.real(linalg.sqrtm((1 - D12 * D12) * np.dot(np.transpose(C1), C1)))
+        Q_x = np.dot(Q_x, np.transpose(Q_x))
+        X_inf = linalg.solve_continuous_are(A_x, B_x, Q_x, R_x)
+
+        A_y = A1 - D21 * np.dot(B1, C2)
+        eigv_y, B_y = linalg.eigh(np.dot(np.transpose(C2), C2) - np.power(gamma, -2) * np.dot(np.transpose(C1), C1))
+        R_y = linalg.inv(np.identity(B_y.shape[0]) * (eigv_y + 1))
+        Q_y = np.real(linalg.sqrtm((1 - D21 * D21) * np.dot(B1, np.transpose(B1))))
+        Q_y = np.dot(Q_y, np.transpose(Q_y))
+        Y_inf = linalg.solve_continuous_are(A_y, B_y, Q_y, R_y)
+
+        eigv, _ = linalg.eigh(np.dot(X_inf, Y_inf))
+        spectral_radius = np.max(np.abs(np.real(eigv)))
+        gamma -= 0.1
+        if spectral_radius > np.square(gamma):
+            stop_cond = False
+
 # 171842,172118
 a = 2
 b = 8
@@ -61,28 +86,20 @@ D11 = 0.0
 D12 = 0.0
 D21 = 1.0
 D22 = 0.0
-gamma = 5.0
 
-stop_cond = True
-while stop_cond is True:
-    A_x = A1 - D12 * np.dot(B2, C1)
-    eigv_x, B_x = linalg.eigh(np.dot(B2, np.transpose(B2)) - np.power(gamma, -2) * np.dot(B1, np.transpose(B1)))
-    R_x = linalg.inv(np.identity(B_x.shape[0]) * (eigv_x + 0.1))
-    Q_x = np.real(linalg.sqrtm((1 - D12 * D12) * np.dot(np.transpose(C1), C1)))
-    Q_x = np.dot(Q_x, np.transpose(Q_x))
-    X_inf = linalg.solve_continuous_are(A_x, B_x, Q_x, R_x)
+gamma = find_gamma()
 
-    A_y = A1 - D21 * np.dot(B1, C2)
-    eigv_y, B_y = linalg.eigh(np.dot(np.transpose(C2), C2) - np.power(gamma, -2) * np.dot(np.transpose(C1), C1))
-    R_y = linalg.inv(np.identity(B_y.shape[0]) * (eigv_y + 1))
-    Q_y = np.real(linalg.sqrtm((1 - D21 * D21) * np.dot(B1, np.transpose(B1))))
-    Q_y = np.dot(Q_y, np.transpose(Q_y))
-    Y_inf = linalg.solve_continuous_are(A_y, B_y, Q_y, R_y)
 
-    eigv, _ = linalg.eigh(np.dot(X_inf, Y_inf))
-    spectral_radius = np.max(np.abs(np.real(eigv)))
-    gamma -= 0.1
-    if spectral_radius > np.square(gamma):
-        stop_cond = False
+# Closed loop - no controller
+T = 1 - S
+control.bode(T, dB=True, deg=True, Plot=True)
+plt.title("T bode plots")
+plt.show()
 
-print(gamma)
+
+
+
+
+
+
+
