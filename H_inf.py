@@ -29,6 +29,7 @@ def find_gamma(starting_gamma=5.0):
         gamma -= 0.1
         if spectral_radius > np.square(gamma):
             stop_cond = False
+    return gamma
 
 # 171842,172118
 a = 2
@@ -88,7 +89,7 @@ D21 = 1.0
 D22 = 0.0
 
 gamma = find_gamma()
-
+print(gamma)
 
 # Closed loop - no controller
 T = 1 - S
