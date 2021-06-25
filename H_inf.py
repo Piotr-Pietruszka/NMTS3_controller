@@ -22,7 +22,7 @@ b = 8
 
 # Plant
 # a)
-z_0 = abs(b-a)
+z_0 = -abs(b-a)
 # b)
 z_0 = 0.5*(b+a)
 A = 0.02
@@ -57,11 +57,12 @@ plt.show()
 L = G
 S = (1 + G)**(-1)
 print(S)
-mag_S, phase_S, w_S = control.bode(S, dB=True, deg=True, Plot=False)
-plt.figure()
-plt.semilogx(w_S, mag_S)
-plt.xlabel('w[rad/s]')
-plt.ylabel('dB')
-plt.title("S amplitude characteristics")
+mag_S, phase_S, w_S = control.bode(S, dB=True, deg=True, Plot=True)
+plt.title("S bode plots")
+# plt.figure()
+# plt.semilogx(w_S, 20*np.log10(mag_S))
+# plt.xlabel('w[rad/s]')
+# plt.ylabel('dB')
+# plt.title("S amplitude characteristic")
 plt.show()
 
