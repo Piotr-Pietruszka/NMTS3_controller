@@ -10,12 +10,6 @@ import control
 
 
 
-
-
-
-
-
-
 # 171842,172118
 a = 2
 b = 8
@@ -28,6 +22,7 @@ z_0 = 0.5*(b+a)
 A = 0.02
 # plant
 # G = sig.lti([1, -z_0], [1, a+b, a*b])
+s = control.TransferFunction.s
 G = control.TransferFunction([1, -z_0], [1, a+b, a*b])
 print(G)
 print(G.pole())
@@ -66,3 +61,16 @@ plt.title("S bode plots")
 # plt.title("S amplitude characteristic")
 plt.show()
 
+
+# GCP
+print(f"z_0: {z_0}")  # w3db < 0.5x_0, gdy z_0 - zero nieminimalnofazowe
+w3db = 0.7
+Ms = 1.2
+
+
+Wp = (s/Ms + w3db) / (s + A*w3db)
+
+P_gcp = np.array([[Wp, -Wp*G],
+                  [1,    -G]])
+
+print(P_gcp)
